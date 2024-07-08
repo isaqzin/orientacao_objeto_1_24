@@ -76,7 +76,21 @@ class Quadrado():
             self.lado = lado
             self.origem = Point(0,0) #composicao
             self.centro = Point(0,0)
+            self.sup_dir = Point()
+            self.sup_esq = Point()
+            self.inf_dir = Point()
+            self.inf_esq = Point()
 
+        def _setPoints(self):
+
+            self.sup_dir.y = self.origem.y + self.lado
+            self.sup_dir.x = self.origem.x + self.lado
+            self.sup_esq.x = self.origem.x
+            self.sup_esq.y = self.origem.y + self.lado
+            self.inf_dir.x = self.origem.x + self.lado
+            self.inf_dir.y = self.origem.y 
+            self.inf_esq = self.origem
+ 
         def setOrigem(self,ponto):
 
             self.origem= ponto
@@ -108,10 +122,25 @@ class Quadrado():
 
 
 class Retangulo(Quadrado):
-    
+
+    #lado é a altura Y, lado 2 é o comprimento X    
     def __init__(self, lado, lado2):
         super().__init__(lado)
         self.lado2= lado2
+        self.sup_dir = Point()
+        self.sup_esq = Point()
+        self.inf_dir = Point()
+        self.inf_esq = Point()
+
+    def _setPoints(self):
+
+        self.sup_dir.y = self.origem.y + self.lado
+        self.sup_dir.x = self.origem.x + self.lado2
+        self.sup_esq.x = self.origem.x
+        self.sup_esq.y = self.origem.y + self.lado
+        self.inf_dir.x = self.origem.x + self.lado2
+        self.inf_dir.y = self.origem.y 
+        self.inf_esq = self.origem
 
     def area(self):
 
@@ -153,19 +182,17 @@ class Triangulo(ABC):
         self.lado2= math.sqrt((ponto2.x - ponto3.x)**2 + (ponto2.y - ponto3.y)**2)
         self.lado3= math.sqrt((ponto3.x - ponto1.x)**2 + (ponto3.y - ponto1.y)**2)
 
-    def __verificarTriangulo(self):
-        if (self.lado1 + self.lado2 )> self.lado3:
-            return True
-        elif (self.lado1 + self.lado3 )> self.lado2:
-            return True
-        elif (self.lado3 + self.lado2 )> self.lado1:
+    def _verificarTriangulo(self):
+
+        if (self.lado1 + self.lado2 )> self.lado3 and (self.lado3 + self.lado2 )> self.lado1 and (self.lado1 + self.lado3 )> self.lado2:
             return True
         else:
             return False
         
 
     def perimetro(self):
-        tester = self.__verificarTriangulo()
+
+        tester = self._verificarTriangulo()
         if tester == True:
             perimetro= self.lado1 + self.lado2 + self.lado3
             return perimetro
@@ -173,7 +200,8 @@ class Triangulo(ABC):
              print("Seus pontos não formam um triangulo.")
     
     def baricentro(self):
-        tester = self.__verificarTriangulo()
+
+        tester = self._verificarTriangulo()
         if tester == True:
             x= (self.ponto1.x + self.ponto2.x + self.ponto3.x)/3
             y =(self.ponto1.y + self.ponto2.y + self.ponto3.y)/3
@@ -194,18 +222,8 @@ class TrianguloEquilatero(Triangulo):
     def __init__(self, ponto1, ponto2, ponto3):
         super().__init__(ponto1, ponto2, ponto3)
 
-    def __verificarTriangulo(self):
-        if (self.lado1 + self.lado2 )> self.lado3:
-            return True
-        elif (self.lado1 + self.lado3 )> self.lado2:
-            return True
-        elif (self.lado3 + self.lado2 )> self.lado1:
-            return True
-        else:
-            return False
-
     def area(self):
-        tester = self.__verificarTriangulo()
+        tester = self._verificarTriangulo()
         if tester == True:
             area = ((self.lado1**2)*math.sqrt(3))/4
             return area
@@ -213,7 +231,7 @@ class TrianguloEquilatero(Triangulo):
              print("Seus pontos não formam um triangulo.")   
 
     def altura(self):
-        tester = self.__verificarTriangulo()
+        tester = self._verificarTriangulo()
         if tester == True:
             altura =(self.lado1*math.sqrt(3))/2
             return altura
@@ -221,7 +239,7 @@ class TrianguloEquilatero(Triangulo):
              print("Seus pontos não formam um triangulo.")   
         
     def model(self):
-        tester = self.__verificarTriangulo()
+        tester = self._verificarTriangulo()
         if tester == True:
             print(f'nosso triangulo tem coordenadas iguais a [{self.ponto1.x},{self.ponto1.y}],[{self.ponto2.x},{self.ponto2.y}],[{self.ponto3.x},{self.ponto3.y}] e lados iguais a {self.lado1}')
         else:
@@ -230,19 +248,11 @@ class TrianguloIsoceles(Triangulo):
 
     def __init__(self, ponto1, ponto2, ponto3):
         super().__init__(ponto1, ponto2, ponto3)
+        
 
-    def __verificarTriangulo(self):
-        if (self.lado1 + self.lado2 )> self.lado3:
-            return True
-        elif (self.lado1 + self.lado3 )> self.lado2:
-            return True
-        elif (self.lado3 + self.lado2 )> self.lado1:
-            return True
-        else:
-            return False
 
     def altura(self):
-        tester = self.__verificarTriangulo()
+        tester = self._verificarTriangulo()
         if tester == True:
             if self.lado1 == self.lado2:
                 altura = (self.lado1**2 - (self.lado3**2)/4)**0.5
@@ -261,7 +271,7 @@ class TrianguloIsoceles(Triangulo):
             print("Seus pontos não formam um triangulo.")   
 
     def area(self):
-        tester = self.__verificarTriangulo()
+        tester = self._verificarTriangulo()
         if tester == True:
             h = self.altura()
         
@@ -281,7 +291,7 @@ class TrianguloIsoceles(Triangulo):
            print("Seus pontos não formam um triangulo.")
 
     def model(self):
-        tester = self.__verificarTriangulo()
+        tester = self._verificarTriangulo()
         if tester == True:
             print(f'nosso triangulo tem coordenadas iguais a [{self.ponto1.x},{self.ponto1.y}],[{self.ponto2.x},{self.ponto2.y}],[{self.ponto3.x},{self.ponto3.y}] e lados iguais a {self.lado1}, {self.lado2} e {self.lado3}') 
         else:
